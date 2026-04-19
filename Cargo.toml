@@ -1,0 +1,31 @@
+[package]
+name        = "agripledge_ph"
+version     = "0.1.0"
+edition     = "2021"
+description = "Stellar Soroban escrow contract for agricultural harvest pre-financing in the Philippines"
+license     = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+path = "contract/src/lib.rs"
+
+[dependencies]
+soroban-sdk = { version = "22.0.0" }
+
+[dev-dependencies]
+soroban-sdk = { version = "22.0.0", features = ["testutils"] }
+
+# ─── Wasm release profile ────────────────────────────────────────────────────
+# Required for Soroban: produces a small, deterministic Wasm binary
+[profile.release]
+opt-level       = "z"      # Optimize for binary size
+overflow-checks = true     # Keep checked arithmetic (safety in financial contract)
+debug           = false
+strip           = "symbols"
+lto             = true     # Link-time optimization for smaller output
+codegen-units   = 1        # Single codegen unit for maximum optimization
+panic           = "abort"  # No unwinding in Wasm
+
+[profile.release-with-logs]
+inherits = "release"
+debug    = true            # Enable logging for testnet debugging

@@ -200,7 +200,7 @@ soroban contract invoke \
 
 ```
 agripledge-ph/
-├── Cargo.toml          # Package config + Wasm release profile
+├── cargo.toml          # Package config + Wasm release profile
 ├── README.md           # This file
 └── src/
     ├── lib.rs          # Soroban contract: storage keys, status enum, all functions
@@ -209,6 +209,15 @@ agripledge-ph/
 
 ---
 
+## Smart Contract
+
+Deployed on Stellar testnet:
+CAIJY7YRYSZX3JTDMRF35A4QPTRHSMAL3P3GDFKQ5QOBIOTEZSRDI3WW
+![alt text](image.png)
+
+---
+
 ## License
 
 MIT — free to use, fork, and deploy. If you build something real with this, tag us.
+
