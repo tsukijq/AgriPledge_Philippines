@@ -209,10 +209,13 @@ agripledge-ph/
 ## Smart Contract
 
 Deployed on Stellar testnet:
+```
 CAIJY7YRYSZX3JTDMRF35A4QPTRHSMAL3P3GDFKQ5QOBIOTEZSRDI3WW
-![alt text](image.png)
+```
 
----
+Explorer: https://stellar.expert/explorer/testnet/contract/CAIJY7YRYSZX3JTDMRF35A4QPTRHSMAL3P3GDFKQ5QOBIOTEZSRDI3WW
+
+
 
 ## License
 
