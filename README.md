@@ -1,6 +1,3 @@
-"# Stellar-repo" 
-"# Stellar-repo" 
-
 # 🌾 AgriPledge PH
 
 > Interest-free harvest pre-financing for Filipino smallholder farmers, powered by Stellar and Soroban.
