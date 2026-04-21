@@ -217,6 +217,17 @@ Explorer: https://stellar.expert/explorer/testnet/contract/CAIJY7YRYSZX3JTDMRF35
 
 
 
+## Smart Contract
+
+Deployed on Stellar testnet:
+```
+CAIJY7YRYSZX3JTDMRF35A4QPTRHSMAL3P3GDFKQ5QOBIOTEZSRDI3WW
+```
+
+Explorer: https://stellar.expert/explorer/testnet/contract/CAIJY7YRYSZX3JTDMRF35A4QPTRHSMAL3P3GDFKQ5QOBIOTEZSRDI3WW
+
+
+
 ## License
 
 MIT — free to use, fork, and deploy. If you build something real with this, tag us.
