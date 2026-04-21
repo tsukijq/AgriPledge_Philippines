@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAppStore } from "../lib/store";
-import { connectWallet, formatAddress } from "../lib/stellar";
+import { checkFreighterAvailable, connectWallet, formatAddress } from "../lib/stellar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -43,6 +43,16 @@ export function WalletButton() {
     setError(null);
 
     try {
+      // Check if Freighter is installed
+      const available = await checkFreighterAvailable();
+
+      if (!available) {
+        // Only show install dialog if Freighter is truly not installed
+        setError("Freighter wallet not found. Please install it.");
+        return;
+      }
+
+      // Freighter is installed — trigger it directly
       const key = await connectWallet();
       if (key) {
         setPublicKey(key);
@@ -50,11 +60,13 @@ export function WalletButton() {
         setShowRoleDialog(true);
       }
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to connect wallet. Make sure Freighter is installed."
-      );
+      // If user rejected or closed Freighter, don't show install dialog
+      const message = err instanceof Error ? err.message : String(err);
+      if (message.toLowerCase().includes("not found") || message.toLowerCase().includes("not installed")) {
+        setError("Freighter wallet not found. Please install it.");
+      } else {
+        setError("Could not connect. Please unlock Freighter and try again.");
+      }
     } finally {
       setIsConnecting(false);
     }
@@ -72,8 +84,8 @@ export function WalletButton() {
   if (!isConnected) {
     return (
       <>
-        <Button 
-          onClick={handleConnect} 
+        <Button
+          onClick={handleConnect}
           disabled={isConnecting}
           className="h-10 shadow-lg shadow-primary/20 transition-all hover:shadow-xl hover:shadow-primary/25"
         >
@@ -95,8 +107,11 @@ export function WalletButton() {
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
                 <DialogTitle>Connection Failed</DialogTitle>
-                <DialogDescription>{error}</DialogDescription>
-              </DialogHeader>
+                <DialogDescription>
+                  {error?.includes("not found") || error?.includes("not installed")
+                    ? "Please install the Freighter wallet extension to use AgriPledge."
+                    : "Please unlock your Freighter wallet and try again."}
+                </DialogDescription>              </DialogHeader>
               <div className="flex flex-col gap-4 pt-4">
                 <p className="text-sm text-muted-foreground">
                   To use AgriPledge, you need the Freighter wallet extension for Stellar.
