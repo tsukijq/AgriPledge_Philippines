@@ -1,0 +1,13 @@
+var R=require("../../../chunks/ssr/[turbopack]_runtime.js")("server/app/farmer/dashboard/page.js")
+R.c("server/chunks/ssr/[root-of-the-server]__03gxnp~._.js")
+R.c("server/chunks/ssr/node_modules_next_dist_esm_build_templates_app-page_0r32mx0.js")
+R.c("server/chunks/ssr/[root-of-the-server]__0ek36do._.js")
+R.c("server/chunks/ssr/node_modules_next_dist_06hehg4._.js")
+R.c("server/chunks/ssr/[root-of-the-server]__0xc-tgk._.js")
+R.c("server/chunks/ssr/node_modules_next_dist_client_components_0inhx6q._.js")
+R.c("server/chunks/ssr/node_modules_next_dist_client_components_builtin_forbidden_0ghu-f7.js")
+R.c("server/chunks/ssr/node_modules_next_dist_client_components_builtin_unauthorized_0cjv-23.js")
+R.c("server/chunks/ssr/node_modules_next_dist_client_components_builtin_global-error_0lgvd_..js")
+R.c("server/chunks/ssr/_next-internal_server_app_farmer_dashboard_page_actions_024b42e.js")
+R.m(23113)
+module.exports=R.m(23113).exports

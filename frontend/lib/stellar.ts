@@ -1,5 +1,5 @@
 import * as StellarSdk from "@stellar/stellar-sdk";
-import { isConnected, getPublicKey, signTransaction } from "@stellar/freighter-api";
+import * as freighterApi from "@stellar/freighter-api";
 import { DEPLOYED_CONTRACT_ID, USDC_TOKEN_ID } from "./store";
 
 // Stellar network configuration
@@ -17,7 +17,7 @@ export const getTxExplorerUrl = (txHash: string) =>
 // Check if Freighter wallet is available
 export async function checkFreighterAvailable(): Promise<boolean> {
   try {
-    const connected = await isConnected();
+    const connected = await freighterApi.isConnected();
     return connected.isConnected;
   } catch {
     return false;
@@ -32,11 +32,16 @@ export async function connectWallet(): Promise<string | null> {
       throw new Error("Freighter wallet not found. Please install it.");
     }
 
-    const response = await getPublicKey();
-    if (response.error) {
-      throw new Error(response.error);
+    const response = await freighterApi.getPublicKey();
+    if (typeof response === "string") return response;
+    if (response && typeof response === "object") {
+      if ("error" in response && response.error) {
+        throw new Error(String(response.error));
+      }
+      if ("address" in response) return response.address;
+      if ("publicKey" in response) return (response as any).publicKey;
     }
-    return response.address;
+    throw new Error("Could not get public key from Freighter.");
   } catch (error) {
     console.error("Failed to connect wallet:", error);
     throw error;
@@ -81,7 +86,7 @@ export async function invokeContract(
   ).build();
 
   // Sign with Freighter
-  const signResult = await signTransaction(prepared.toXDR(), {
+  const signResult = await freighterApi.signTransaction(prepared.toXDR(), {
     networkPassphrase: NETWORK_PASSPHRASE,
   });
 
@@ -137,7 +142,7 @@ export async function createCommitment(
   const args = [
     toAddress(farmerPublicKey),
     toAddress(tokenAddress || USDC_TOKEN_ID),
-    toI128(amount * 10_000_000), // Convert to stroops (7 decimals for USDC)
+    toI128(amount * 10_000_000),
     toScString(cropDescription),
   ];
 
