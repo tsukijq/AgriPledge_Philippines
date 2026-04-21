@@ -1,6 +1,3 @@
-"# Stellar-repo" 
-"# Stellar-repo" 
-
 # 🌾 AgriPledge PH
 
 > Interest-free harvest pre-financing for Filipino smallholder farmers, powered by Stellar and Soroban.
@@ -200,15 +197,27 @@ soroban contract invoke \
 
 ```
 agripledge-ph/
-├── Cargo.toml          # Package config + Wasm release profile
+├── cargo.toml          # Package config + Wasm release profile
 ├── README.md           # This file
 └── src/
     ├── lib.rs          # Soroban contract: storage keys, status enum, all functions
     └── test.rs         # 5 unit tests (happy path, edge cases, state verification)
 ```
 
----
+--- 
+
+## Smart Contract
+
+Deployed on Stellar testnet:
+```
+CAIJY7YRYSZX3JTDMRF35A4QPTRHSMAL3P3GDFKQ5QOBIOTEZSRDI3WW
+```
+
+Explorer: https://stellar.expert/explorer/testnet/contract/CAIJY7YRYSZX3JTDMRF35A4QPTRHSMAL3P3GDFKQ5QOBIOTEZSRDI3WW
+
+
 
 ## License
 
 MIT — free to use, fork, and deploy. If you build something real with this, tag us.
+
