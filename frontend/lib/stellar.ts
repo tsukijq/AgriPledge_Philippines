@@ -18,7 +18,9 @@ export const getTxExplorerUrl = (txHash: string) =>
 export async function checkFreighterAvailable(): Promise<boolean> {
   try {
     const connected = await freighterApi.isConnected();
-    return connected.isConnected;
+    if (!connected.isConnected) return false;
+    await freighterApi.requestAccess();
+    return true;
   } catch {
     return false;
   }
@@ -32,16 +34,11 @@ export async function connectWallet(): Promise<string | null> {
       throw new Error("Freighter wallet not found. Please install it.");
     }
 
-    const response = await freighterApi.getPublicKey();
-    if (typeof response === "string") return response;
-    if (response && typeof response === "object") {
-      if ("error" in response && response.error) {
-        throw new Error(String(response.error));
-      }
-      if ("address" in response) return response.address;
-      if ("publicKey" in response) return (response as any).publicKey;
+    const response = await freighterApi.getAddress();
+    if (response.error) {
+      throw new Error(String(response.error));
     }
-    throw new Error("Could not get public key from Freighter.");
+    return response.address;
   } catch (error) {
     console.error("Failed to connect wallet:", error);
     throw error;
