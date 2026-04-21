@@ -17,6 +17,7 @@ import {
 import { Search, SlidersHorizontal, Wheat, TrendingUp, Wallet } from "lucide-react";
 import { ContractStatus } from "@/frontend/lib/types";
 import { useRouter } from "next/navigation";
+import { fundCommitment as fundCommitmentContract } from "@/frontend/lib/stellar";
 
 export default function MarketplacePage() {
   const router = useRouter();
@@ -85,7 +86,14 @@ export default function MarketplacePage() {
       return;
     }
 
-    // Demo: fund the commitment
+    try {
+      // Call the actual Soroban smart contract
+      await fundCommitmentContract(publicKey!);
+    } catch (contractErr) {
+      console.error("Contract call failed, saving locally:", contractErr);
+    }
+
+    // Update local state
     fundCommitment(id, publicKey!);
     router.push(`/commitment/${id}`);
   };
@@ -97,7 +105,7 @@ export default function MarketplacePage() {
         <div className="absolute inset-0 bg-grid opacity-50" />
         <div className="absolute -left-32 top-0 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
         <div className="absolute -right-32 bottom-0 h-64 w-64 rounded-full bg-accent/10 blur-3xl" />
-        
+
         <div className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
@@ -108,7 +116,7 @@ export default function MarketplacePage() {
                 Browse and fund harvest commitments from Filipino farmers. Support local agriculture with zero-interest pre-financing.
               </p>
             </div>
-            
+
             {/* Stats */}
             <div className="flex gap-6">
               <div className="text-center">
