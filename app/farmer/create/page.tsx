@@ -41,6 +41,7 @@ import { redirect } from "next/navigation";
 import { MilestoneTracker } from "@/frontend/components/milestone-tracker";
 import type { MockCommitment } from "@/frontend/lib/types";
 import { ContractStatus } from "@/frontend/lib/types";
+import { createCommitment } from "@/frontend/lib/stellar";
 
 const cropTypes = [
   { value: "rice", label: "Rice", icon: "🌾" },
@@ -142,8 +143,17 @@ export default function CreateCommitmentPage() {
         ),
       };
 
-      // Simulate contract call delay
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Call the actual Soroban smart contract
+      try {
+        await createCommitment(
+          publicKey!,
+          USDC_TOKEN_ID,
+          previewAmount,
+          cropDescription
+        );
+      } catch (contractErr) {
+        console.error("Contract call failed, saving locally:", contractErr);
+      }
 
       addCommitment(newCommitment);
       router.push("/farmer/dashboard");
@@ -209,13 +219,12 @@ export default function CreateCommitmentPage() {
                   <button
                     type="button"
                     onClick={() => setCurrentStep(step.number)}
-                    className={`flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium transition-all sm:px-4 ${
-                      isActive
+                    className={`flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium transition-all sm:px-4 ${isActive
                         ? "bg-primary text-primary-foreground shadow-lg"
                         : isComplete
                           ? "bg-primary/20 text-primary"
                           : "bg-muted text-muted-foreground hover:bg-muted/80"
-                    }`}
+                      }`}
                   >
                     {isComplete ? (
                       <CheckCircle2 className="h-4 w-4" />
@@ -226,9 +235,8 @@ export default function CreateCommitmentPage() {
                   </button>
                   {idx < steps.length - 1 && (
                     <div
-                      className={`mx-2 h-0.5 w-8 sm:w-12 ${
-                        currentStep > step.number ? "bg-primary" : "bg-border"
-                      }`}
+                      className={`mx-2 h-0.5 w-8 sm:w-12 ${currentStep > step.number ? "bg-primary" : "bg-border"
+                        }`}
                     />
                   )}
                 </div>
@@ -312,11 +320,10 @@ export default function CreateCommitmentPage() {
                               onClick={() =>
                                 setFormData({ ...formData, cropType: crop.value })
                               }
-                              className={`flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all hover:border-primary/50 ${
-                                formData.cropType === crop.value
+                              className={`flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all hover:border-primary/50 ${formData.cropType === crop.value
                                   ? "border-primary bg-primary/5"
                                   : "border-border"
-                              }`}
+                                }`}
                             >
                               <span className="text-2xl">{crop.icon}</span>
                               <span className="text-sm font-medium">
@@ -553,9 +560,9 @@ export default function CreateCommitmentPage() {
                             <span className="font-medium">
                               {formData.harvestMonth
                                 ? new Date(formData.harvestMonth).toLocaleDateString(
-                                    "en-US",
-                                    { month: "long", year: "numeric" }
-                                  )
+                                  "en-US",
+                                  { month: "long", year: "numeric" }
+                                )
                                 : "-"}
                             </span>
                           </div>
