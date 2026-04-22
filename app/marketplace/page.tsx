@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect } from "react";
+import { fetchCommitments, updateCommitmentFunded } from "@/frontend/lib/supabase";
+import { useAppStore, DEPLOYED_CONTRACT_ID } from "@/frontend/lib/store";
 import { useState } from "react";
-import { useAppStore } from "@/frontend/lib/store";
 import { CommitmentCard } from "@/frontend/components/commitment-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -21,12 +23,43 @@ import { fundCommitment as fundCommitmentContract } from "@/frontend/lib/stellar
 
 export default function MarketplacePage() {
   const router = useRouter();
-  const { commitments, isConnected, role, publicKey, fundCommitment } =
+  const { commitments, isConnected, role, publicKey, fundCommitment, addCommitment } =
     useAppStore();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("newest");
+
+  useEffect(() => {
+    async function loadCommitments() {
+      try {
+        const data = await fetchCommitments();
+        data.forEach((c: any) => {
+          if (!commitments.find((existing) => existing.id === c.id)) {
+            addCommitment({
+              id: c.id,
+              contractId: DEPLOYED_CONTRACT_ID,
+              farmer: c.farmer_address,
+              farmerName: c.farmer_name,
+              token: c.token,
+              totalAmount: c.total_amount,
+              cropDescription: c.crop_description,
+              status: c.status,
+              milestones: c.milestones,
+              createdAt: new Date(c.created_at),
+              expectedHarvestDate: new Date(c.expected_harvest_date),
+              buyer: c.buyer_address,
+              fundedAt: c.funded_at ? new Date(c.funded_at) : undefined,
+              location: c.location,
+            });
+          }
+        });
+      } catch (err) {
+        console.error("Failed to load commitments:", err);
+      }
+    }
+    loadCommitments();
+  }, []);
 
   // Filter commitments
   const filteredCommitments = commitments
@@ -77,25 +110,17 @@ export default function MarketplacePage() {
   );
 
   const handleFund = async (id: string) => {
-    if (!isConnected) {
-      alert("Please connect your wallet first");
-      return;
-    }
-    if (role !== "buyer") {
-      alert("Please switch to buyer mode to fund commitments");
-      return;
-    }
+    if (!isConnected) { alert("Please connect your wallet first"); return; }
+    if (role !== "buyer") { alert("Please switch to buyer mode"); return; }
 
     try {
-      // Call the actual Soroban smart contract
-      await fundCommitmentContract(publicKey!);
-    } catch (contractErr) {
-      console.error("Contract call failed, saving locally:", contractErr);
+      await updateCommitmentFunded(id, publicKey!);
+      fundCommitment(id, publicKey!);
+      router.push(`/commitment/${id}`);
+    } catch (err) {
+      console.error("Failed to fund commitment:", err);
+      alert("Failed to fund commitment. Please try again.");
     }
-
-    // Update local state
-    fundCommitment(id, publicKey!);
-    router.push(`/commitment/${id}`);
   };
 
   return (
