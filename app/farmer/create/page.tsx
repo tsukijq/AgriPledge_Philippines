@@ -1,5 +1,6 @@
 "use client";
 
+import { insertCommitment } from "@/frontend/lib/supabase";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAppStore, USDC_TOKEN_ID } from "@/frontend/lib/store";
@@ -155,8 +156,25 @@ export default function CreateCommitmentPage() {
         console.error("Contract call failed, saving locally:", contractErr);
       }
 
-      addCommitment(newCommitment);
+      const inserted = await insertCommitment({
+        farmer_address: publicKey!,
+        farmer_name: formData.farmerName || "Anonymous Farmer",
+        token: USDC_TOKEN_ID,
+        total_amount: previewAmount,
+        crop_description: cropDescription,
+        location: formData.location,
+        expected_harvest_date: new Date(
+          formData.harvestMonth || Date.now() + 90 * 24 * 60 * 60 * 1000
+        ).toISOString(),
+      });
+
+      addCommitment({
+        ...newCommitment,
+        id: inserted.id,
+      });
+
       router.push("/farmer/dashboard");
+      
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to create commitment"
@@ -220,10 +238,10 @@ export default function CreateCommitmentPage() {
                     type="button"
                     onClick={() => setCurrentStep(step.number)}
                     className={`flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium transition-all sm:px-4 ${isActive
-                        ? "bg-primary text-primary-foreground shadow-lg"
-                        : isComplete
-                          ? "bg-primary/20 text-primary"
-                          : "bg-muted text-muted-foreground hover:bg-muted/80"
+                      ? "bg-primary text-primary-foreground shadow-lg"
+                      : isComplete
+                        ? "bg-primary/20 text-primary"
+                        : "bg-muted text-muted-foreground hover:bg-muted/80"
                       }`}
                   >
                     {isComplete ? (
@@ -321,8 +339,8 @@ export default function CreateCommitmentPage() {
                                 setFormData({ ...formData, cropType: crop.value })
                               }
                               className={`flex flex-col items-center gap-2 rounded-xl border-2 p-4 transition-all hover:border-primary/50 ${formData.cropType === crop.value
-                                  ? "border-primary bg-primary/5"
-                                  : "border-border"
+                                ? "border-primary bg-primary/5"
+                                : "border-border"
                                 }`}
                             >
                               <span className="text-2xl">{crop.icon}</span>
